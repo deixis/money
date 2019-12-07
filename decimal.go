@@ -671,8 +671,8 @@ func buildDecimal(value int64, exp int32) Decimal {
 	}
 }
 
-// pow returns d to the power d2
-func (d Decimal) pow(d2 Decimal) Decimal {
+// Pow returns d to the power d2
+func (d Decimal) Pow(d2 Decimal) Decimal {
 	var temp Decimal
 	if d2.IntPart() == 0 {
 		x, err := NewDecimal(1)
@@ -686,7 +686,7 @@ func (d Decimal) pow(d2 Decimal) Decimal {
 	if err != nil {
 		panic(err)
 	}
-	temp = d.pow(d2.Div(x))
+	temp = d.Pow(d2.Div(x))
 	if d2.IntPart()%2 == 0 {
 		return temp.Mul(temp)
 	}

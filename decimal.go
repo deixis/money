@@ -70,9 +70,6 @@ var (
 )
 
 var (
-	// ErrMissingDecimalPrecision indicates that the string does not contain a decimal separator
-	// e.g. 120 instead of 120.00
-	ErrMissingDecimalPrecision = errors.New("missing decimal precision")
 	// ErrInvalidDecimal indicates that the string is not a valid decimal
 	ErrInvalidDecimal = errors.New("invalid decimal")
 )
@@ -127,9 +124,8 @@ func ParseDecimal(value string) (Decimal, error) {
 	parts := strings.Split(value, decSeparator)
 	switch len(parts) {
 	case 1:
-		// For now we don't fall back to an arbitrary precision to
-		// avoid quiet failures
-		return zero, ErrMissingDecimalPrecision
+		ints = parts[0]
+		exp = 0
 	case 2:
 		// strip the insignificant digits for more accurate comparisons.
 		ints = parts[0] + parts[1]
@@ -564,9 +560,6 @@ func (d *Decimal) PercentFormatter() number.Formatter {
 
 // Validate returns whether the currency is valid
 func (d Decimal) Validate() error {
-	if d.roundPrec() == 0 {
-		return ErrMissingDecimalPrecision
-	}
 	return nil
 }
 

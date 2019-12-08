@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"sync"
 
 	"golang.org/x/text/currency"
 )
@@ -47,6 +48,9 @@ func ParseCurrency(s string) (Currency, error) {
 	// Sanitise
 	s = strings.TrimSpace(strings.ToUpper(s))
 
+	if _, ok := unoficialCurrencies.Load(s); ok {
+		return Currency(s), nil
+	}
 	u, err := currency.ParseISO(s)
 	if err != nil {
 		return nullCurrency, ErrInvalidCurrency
@@ -126,3 +130,17 @@ func (c *Currency) currency() *currency.Unit {
 const (
 	nullCurrency Currency = ""
 )
+
+var unoficialCurrencies = sync.Map{}
+
+// RegisterUnoficialCurrency registers a currency code that is not a valid
+// ISO 4217 currency code.
+//
+// This can be used for crypto currency codes, such as ETH, DAI, USDC, ...
+func RegisterUnoficialCurrency(code string) {
+	code = strings.TrimSpace(strings.ToUpper(code))
+
+	if _, err := ParseCurrency(code); err == ErrInvalidCurrency {
+		unoficialCurrencies.Store(code, true)
+	}
+}

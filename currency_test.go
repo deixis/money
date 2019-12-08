@@ -90,3 +90,29 @@ func TestCurency_GobEncode(t *testing.T) {
 		}
 	}
 }
+
+func Test_UnoficialCurrency(t *testing.T) {
+	t.Parallel()
+
+	table := []struct {
+		input money.Currency
+	}{
+		{input: "ETH"},
+		{input: "USDC"},
+		{input: "DAI"},
+	}
+
+	for i, test := range table {
+		_, err := money.ParseCurrency(test.input.String())
+		if err != money.ErrInvalidCurrency {
+			t.Fatalf("#%d - expect unoficial currency to fail when not registered", i)
+		}
+
+		money.RegisterUnoficialCurrency(test.input.String())
+
+		_, err = money.ParseCurrency(test.input.String())
+		if err != nil {
+			t.Errorf("#%d - expect unoficial currency to be valid when registered, but got %s", i, err)
+		}
+	}
+}

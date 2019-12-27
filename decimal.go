@@ -61,6 +61,7 @@ const (
 
 var (
 	zero    = buildDecimal(0, 1)
+	ten     = buildDecimal(10, 0)
 	hundred = buildDecimal(100, 0)
 
 	zeroInt = big.NewInt(0)
@@ -662,6 +663,11 @@ func buildDecimal(value int64, exp int32) Decimal {
 		value: *big.NewInt(value),
 		exp:   exp,
 	}
+}
+
+// Pow10 returns 10**d, the base-10 exponential of d.
+func Pow10(d Decimal) Decimal {
+	return ten.Pow(d)
 }
 
 // Pow returns d to the power d2
